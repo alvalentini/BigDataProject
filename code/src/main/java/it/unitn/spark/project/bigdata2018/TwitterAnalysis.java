@@ -25,12 +25,25 @@ import org.apache.spark.sql.SparkSession.Builder;
 
 public class TwitterAnalysis {
 	
-	static private String[] stopwords = {"a", "as", "able", "about", "above", "according", "accordingly", "across", "actually", "after", "afterwards", "again", "against", "aint", "all", "allow", "allows", "almost", "alone", "along", "already", "also", "although", "always", "am", "among", "amongst", "an", "and", "another", "any", "anybody", "anyhow", "anyone", "anything", "anyway", "anyways", "anywhere", "apart", "appear", "appreciate", "appropriate", "are", "arent", "around", "as", "aside", "ask", "asking", "associated", "at", "available", "away", "awfully", "be", "became", "because", "become", "becomes", "becoming", "been", "before", "beforehand", "behind", "being", "believe", "below", "beside", "besides", "best", "better", "between", "beyond", "both", "brief", "but", "by", "cmon", "cs", "came", "can", "cant", "cannot", "cant", "cause", "causes", "certain", "certainly", "changes", "clearly", "co", "com", "come", "comes", "concerning", "consequently", "consider", "considering", "contain", "containing", "contains", "corresponding", "could", "couldnt", "course", "currently", "definitely", "described", "despite", "did", "didnt", "different", "do", "does", "doesnt", "doing", "dont", "done", "down", "downwards", "during", "each", "edu", "eg", "eight", "either", "else", "elsewhere", "enough", "entirely", "especially", "et", "etc", "even", "ever", "every", "everybody", "everyone", "everything", "everywhere", "ex", "exactly", "example", "except", "far", "few", "ff", "fifth", "first", "five", "followed", "following", "follows", "for", "former", "formerly", "forth", "four", "from", "further", "furthermore", "get", "gets", "getting", "given", "gives", "go", "goes", "going", "gone", "got", "gotten", "greetings", "had", "hadnt", "happens", "hardly", "has", "hasnt", "have", "havent", "having", "he", "hes", "hello", "help", "hence", "her", "here", "heres", "hereafter", "hereby", "herein", "hereupon", "hers", "herself", "hi", "him", "himself", "his", "hither", "hopefully", "how", "howbeit", "however", "http", "https", "i", "id", "ill", "im", "ive", "ie", "if", "ignored", "immediate", "in", "inasmuch", "inc", "indeed", "indicate", "indicated", "indicates", "inner", "insofar", "instead", "into", "inward", "is", "isnt", "it", "itd", "itll", "its", "its", "itself", "just", "keep", "keeps", "kept", "know", "knows", "known", "last", "lately", "later", "latter", "latterly", "least", "less", "lest", "let", "lets", "like", "liked", "likely", "little", "look", "looking", "looks", "ltd", "mainly", "many", "may", "maybe", "me", "mean", "meanwhile", "merely", "might", "more", "moreover", "most", "mostly", "much", "must", "my", "myself", "name", "namely", "nd", "near", "nearly", "necessary", "need", "needs", "neither", "never", "nevertheless", "new", "next", "nine", "no", "nobody", "non", "none", "noone", "nor", "normally", "not", "nothing", "novel", "now", "nowhere", "obviously", "of", "off", "often", "oh", "ok", "okay", "old", "on", "once", "one", "ones", "only", "onto", "or", "other", "others", "otherwise", "ought", "our", "ours", "ourselves", "out", "outside", "over", "overall", "own", "particular", "particularly", "per", "perhaps", "placed", "please", "plus", "possible", "presumably", "probably", "provides", "que", "quite", "qv", "rather", "rd", "re", "really", "reasonably", "regarding", "regardless", "regards", "relatively", "respectively", "right", "said", "same", "saw", "say", "saying", "says", "second", "secondly", "see", "seeing", "seem", "seemed", "seeming", "seems", "seen", "self", "selves", "sensible", "sent", "serious", "seriously", "seven", "several", "shall", "she", "should", "shouldnt", "since", "six", "so", "some", "somebody", "somehow", "someone", "something", "sometime", "sometimes", "somewhat", "somewhere", "soon", "sorry", "specified", "specify", "specifying", "still", "sub", "such", "sup", "sure", "ts", "take", "taken", "tell", "tends", "th", "than", "thank", "thanks", "thanx", "that", "thats", "thats", "the", "their", "theirs", "them", "themselves", "then", "thence", "there", "theres", "thereafter", "thereby", "therefore", "therein", "theres", "thereupon", "these", "they", "theyd", "theyll", "theyre", "theyve", "think", "third", "this", "thorough", "thoroughly", "those", "though", "three", "through", "throughout", "thru", "thus", "to", "together", "too", "took", "toward", "towards", "tried", "tries", "truly", "try", "trying", "twice", "two", "un", "under", "unfortunately", "unless", "unlikely", "until", "unto", "up", "upon", "us", "use", "used", "useful", "uses", "using", "usually", "value", "various", "very", "via", "viz", "vs", "want", "wants", "was", "wasnt", "way", "we", "wed", "well", "were", "weve", "welcome", "well", "went", "were", "werent", "what", "whats", "whatever", "when", "whence", "whenever", "where", "wheres", "whereafter", "whereas", "whereby", "wherein", "whereupon", "wherever", "whether", "which", "while", "whither", "who", "whos", "whoever", "whole", "whom", "whose", "why", "will", "willing", "wish", "with", "within", "without", "wont", "wonder", "would", "would", "wouldnt", "yes", "yet", "you", "youd", "youll", "youre", "youve", "your", "yours", "yourself", "yourselves", "zero"};
+	static private String[] stopwords = {"a", "as", "able", "about", "above", "according", "accordingly", "across", "actually", "after", "afterwards", "again", "against", "aint", "all", "allow", "allows", "almost", "alone", "along", "already", "also", "although", "always", "am", "among", "amongst", "an", "and", "another", "any", "anybody", "anyhow", "anyone", "anything", "anyway", "anyways", "anywhere", "apart", "appear", "appreciate", "appropriate", "are", "arent", "around", "as", "aside", "ask", "asking", "associated", "at", "available", "away", "awfully", "be", "became", "because", "become", "becomes", "becoming", "been", "before", "beforehand", "behind", "being", "believe", "below", "beside", "besides", "best", "better", "between", "beyond", "both", "brief", "but", "by", "cmon", "cs", "came", "can", "cant", "cannot", "cant", "cause", "causes", "certain", "certainly", "changes", "clearly", "co", "com", "come", "comes", "concerning", "consequently", "consider", "considering", "contain", "containing", "contains", "corresponding", "could", "couldnt", "course", "currently", "definitely", "described", "despite", "did", "didnt", "different", "do", "does", "doesnt", "doing", "dont", "done", "down", "downwards", "during", "each", "edu", "eg", "eight", "either", "else", "elsewhere", "enough", "entirely", "especially", "et", "etc", "even", "ever", "every", "everybody", "everyone", "everything", "everywhere", "ex", "exactly", "example", "except", "far", "few", "ff", "fifth", "first", "five", "followed", "following", "follows", "for", "former", "formerly", "forth", "four", "from", "further", "furthermore", "get", "gets", "getting", "given", "gives", "go", "goes", "going", "gone", "got", "gotten", "greetings", "had", "hadnt", "happens", "hardly", "has", "hasnt", "have", "havent", "having", "he", "hes", "hello", "help", "hence", "her", "here", "heres", "hereafter", "hereby", "herein", "hereupon", "hers", "herself", "hi", "him", "himself", "his", "hither", "hopefully", "how", "howbeit", "however", "http", "https", "i", "id", "ill", "im", "ive", "ie", "if", "ignored", "immediate", "in", "inasmuch", "inc", "indeed", "indicate", "indicated", "indicates", "inner", "insofar", "instead", "into", "inward", "is", "isnt", "it", "itd", "itll", "its", "its", "itself", "just", "keep", "keeps", "kept", "know", "knows", "known", "last", "lately", "later", "latter", "latterly", "least", "less", "lest", "let", "lets", "like", "liked", "likely", "little", "look", "looking", "looks", "ltd", "mainly", "many", "may", "maybe", "me", "mean", "meanwhile", "merely", "might", "more", "moreover", "most", "mostly", "much", "must", "my", "myself", "name", "namely", "nd", "near", "nearly", "necessary", "need", "needs", "neither", "never", "nevertheless", "new", "next", "nine", "no", "nobody", "non", "none", "noone", "nor", "normally", "not", "nothing", "novel", "now", "nowhere", "obviously", "of", "off", "often", "oh", "ok", "okay", "old", "on", "once", "one", "ones", "only", "onto", "or", "other", "others", "otherwise", "ought", "our", "ours", "ourselves", "out", "outside", "over", "overall", "own", "particular", "particularly", "per", "perhaps", "placed", "please", "plus", "possible", "presumably", "probably", "provides", "que", "quite", "qv", "rather", "rd", "re", "really", "reasonably", "regarding", "regardless", "regards", "relatively", "respectively", "right", "said", "same", "saw", "say", "saying", "says", "second", "secondly", "see", "seeing", "seem", "seemed", "seeming", "seems", "seen", "self", "selves", "sensible", "sent", "serious", "seriously", "seven", "several", "shall", "she", "should", "shouldnt", "since", "six", "so", "some", "somebody", "somehow", "someone", "something", "sometime", "sometimes", "somewhat", "somewhere", "soon", "sorry", "specified", "specify", "specifying", "still", "sub", "such", "sup", "sure", "ts", "take", "taken", "tell", "tends", "th", "than", "thank", "thanks", "thanx", "that", "thats", "thats", "the", "their", "theirs", "them", "themselves", "then", "thence", "there", "theres", "thereafter", "thereby", "therefore", "therein", "theres", "thereupon", "these", "they", "theyd", "theyll", "theyre", "theyve", "think", "third", "this", "thorough", "thoroughly", "those", "though", "three", "through", "throughout", "thru", "thus", "to", "together", "too", "took", "toward", "towards", "tried", "tries", "truly", "try", "trying", "twice", "two", "un", "under", "unfortunately", "unless", "unlikely", "until", "unto", "up", "upon", "us", "use", "used", "useful", "uses", "using", "usually", "value", "various", "very", "via", "viz", "vs", "want", "wants", "was", "wasnt", "way", "we", "wed", "well", "were", "weve", "welcome", "well", "went", "were", "werent", "what", "whats", "whatever", "when", "whence", "whenever", "where", "wheres", "whereafter", "whereas", "whereby", "wherein", "whereupon", "wherever", "whether", "which", "while", "whither", "who", "whos", "whoever", "whole", "whom", "whose", "why", "will", "willing", "wish", "with", "within", "without", "wont", "wonder", "would", "would", "wouldnt", "yes", "yet", "you", "youd", "youll", "youre", "youve", "your", "yours", "yourself", "yourselves", "zero", "lol", "hey", "yep", "lmao", "omg", "btw", "idk", "lool", "ahah", "ain", "slp", "xoxo", "don", "bye", "wat", "wow", "pls", "gotta", "omfg", "nah", "isn", "neh", "yeah", "yea", "lot", "lmfao", "tho", "cuz", "yup", "frfr", "sigh", "bout", "asap", "deh", "nuh", "blah", "yay", "damn"};
 	static private Set<String> stopWordSet = new HashSet<String>(Arrays.asList(stopwords));
 	static private int profile_length = 10;
 
+	private static List<String> featuresFromTweet(String tweet, boolean duplicate) {
+		String[] words = tweet.replaceAll("@[^\\s]+", " ").replaceAll("((www\\.[^\\s]+)|(https?://[^\\s]+)|(pic\\.twitter\\.com/[^\\s]+))", " ").replaceAll("[^a-zA-Z ]", " ").toLowerCase().split("\\s+");
+		List<String> features = new ArrayList<>();
+		for (String word : words) {
+			if (word.length() > 2 && word.length() < 16 && !stopWordSet.contains(word) &&
+				!word.matches(".*(a{3,}|b{3,}|c{3,}|d{3,}|e{3,}|f{3,}|g{3,}|h{3,}|i{3,}|j{3,}|k{3,}|l{3,}|m{3,}|n{3,}|o{3,}|p{3,}|q{3,}|r{3,}|s{3,}|t{3,}|u{3,}|v{3,}|w{3,}|x{3,}|y{3,}|z{3,}).*") &&
+				!word.matches("(.*(ahah).*)|(.*(haha).*)") &&
+				(duplicate || !features.contains(word))) {
+				features.add(word);
+			}
+		}
+		return features;
+	}
+
 	public static void main(String[] args) {
-		// SparkSession
 		Builder builder = new Builder().appName("Twitter analysis");
 		if (new File("/home/").exists()) {
 			builder.master("local");
@@ -39,23 +52,13 @@ public class TwitterAnalysis {
 
 		JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
 		
-		JavaRDD<String> rdd = sc.textFile("../data/tweets_2xuser_A.txt");
+		JavaRDD<String> rdd = sc.textFile("../data/tweets_10xuser_time_all.txt");
 		
 		double n = rdd.map(s -> 1).reduce((a, b) -> a + b);
 		JavaPairRDD<String, Integer> wordCount = rdd.flatMap(line -> {
 			String[] parts = line.split("\t\t");
-			if (parts.length != 2) {
-				List<String> features = new ArrayList<>();
-				return features.iterator();
-			}
-			String[] words = parts[1].replaceAll("[^a-zA-Z ]", " ").toLowerCase().split("\\s+");
-			List<String> features = new ArrayList<>();
-			for (String word : words) {
-				if (word.length() > 2 && !stopWordSet.contains(word) && !features.contains(word)) {
-					features.add(word);
-				}
-			}
-			return features.iterator();			
+			List<String> features = featuresFromTweet(parts[1], false);
+			return features.iterator();
 		}).mapToPair(x -> new Tuple2<String, Integer>(x, 1)).reduceByKey((x, y) -> x + y);
 		
 		Map<String, Double> m = new HashMap<String, Double>();
@@ -67,17 +70,7 @@ public class TwitterAnalysis {
 		JavaPairRDD<String, List<Tuple2<String, Double>>> userProfiling = rdd.mapToPair((PairFunction<String, String, List<String>>) line -> {
 			String[] parts = line.split("\t\t");
 			String user = parts[0];
-			if (parts.length != 2) {
-				List<String> features = new ArrayList<>();
-				return new Tuple2<>(user, features);
-			}
-			String[] words = parts[1].replaceAll("[^a-zA-Z ]", " ").toLowerCase().split("\\s+");
-			List<String> features = new ArrayList<>();
-			for (String word : words) {
-				if (word.length() > 2 && !stopWordSet.contains(word)) {
-					features.add(word);
-				}
-			}
+			List<String> features = featuresFromTweet(parts[1], true);
 			return new Tuple2<>(user, features);
 		}).reduceByKey((x, y) -> {
 			x.addAll(y);
@@ -104,22 +97,27 @@ public class TwitterAnalysis {
 			for (Map.Entry<String, Integer> e : f.entrySet()) {
 				String w1 = e.getKey();
 				double idf = Math.log10(1./(double)m.get(w1));
-				double td = (double)e.getValue()/(double)l;
-				double td_idf = td*idf;
-				if (!om.containsKey(td_idf)) {
-					om.put(td_idf, new HashSet<>());
+				double tf = (double)e.getValue()/(double)l;
+				double tf_idf = tf*idf;
+				if (!om.containsKey(tf_idf)) {
+					om.put(tf_idf, new HashSet<>());
 				}
-				om.get(td_idf).add(w1);
+				om.get(tf_idf).add(w1);
 			}
 			List<Tuple2<String, Double>> features = new ArrayList<>();
 			int i = 0;
+			boolean done = false;
 			for (Map.Entry<Double, Set<String>> e1 : om.entrySet()) {
 				Set<String> w_set = e1.getValue();
 				for (String w : w_set) {
 					features.add(new Tuple2<>(w, e1.getKey()));
 					i++;
-					if (i >= profile_length) break;
+					if (i >= profile_length) {
+						done = true;
+						break;
+					}
 				}
+				if (done) break;
 			}
 			return new Tuple2<>(p._1, features);			
 		});
@@ -138,7 +136,9 @@ public class TwitterAnalysis {
 		try {
 			writer = new PrintWriter("users.txt");
 			for (UserProfile userProfile : userProfiles) {
-				writer.println(userProfile);
+				if (userProfile.getFeatures().size() > 3) {
+					writer.println(userProfile);
+				}
 			}
 			writer.close();
 		} catch (FileNotFoundException e) {
