@@ -52,7 +52,7 @@ public class TwitterAnalysis {
 
 		JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
 		
-		JavaRDD<String> rdd = sc.textFile("../data/tweets_10xuser_time_all.txt");
+		JavaRDD<String> rdd = sc.textFile("../data/tweets_20xuser_time_all.txt");
 		
 		double n = rdd.map(s -> 1).reduce((a, b) -> a + b);
 		JavaPairRDD<String, Integer> wordCount = rdd.flatMap(line -> {
