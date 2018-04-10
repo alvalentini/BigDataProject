@@ -3,7 +3,6 @@ package it.unitn.spark.project.bigdata2018;
 import it.unitn.spark.project.bigdata2018.UserProfile;
 import scala.Tuple2;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -20,12 +19,13 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.PairFunction;
+import org.apache.spark.ml.feature.StopWordsRemover;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.SparkSession.Builder;
 
 public class TwitterAnalysis {
 	
-	static private String[] stopwords = {"a", "as", "able", "about", "above", "according", "accordingly", "across", "actually", "after", "afterwards", "again", "against", "aint", "all", "allow", "allows", "almost", "alone", "along", "already", "also", "although", "always", "am", "among", "amongst", "an", "and", "another", "any", "anybody", "anyhow", "anyone", "anything", "anyway", "anyways", "anywhere", "apart", "appear", "appreciate", "appropriate", "are", "arent", "around", "as", "aside", "ask", "asking", "associated", "at", "available", "away", "awfully", "be", "became", "because", "become", "becomes", "becoming", "been", "before", "beforehand", "behind", "being", "believe", "below", "beside", "besides", "best", "better", "between", "beyond", "both", "brief", "but", "by", "cmon", "cs", "came", "can", "cant", "cannot", "cant", "cause", "causes", "certain", "certainly", "changes", "clearly", "co", "com", "come", "comes", "concerning", "consequently", "consider", "considering", "contain", "containing", "contains", "corresponding", "could", "couldnt", "course", "currently", "definitely", "described", "despite", "did", "didnt", "different", "do", "does", "doesnt", "doing", "dont", "done", "down", "downwards", "during", "each", "edu", "eg", "eight", "either", "else", "elsewhere", "enough", "entirely", "especially", "et", "etc", "even", "ever", "every", "everybody", "everyone", "everything", "everywhere", "ex", "exactly", "example", "except", "far", "few", "ff", "fifth", "first", "five", "followed", "following", "follows", "for", "former", "formerly", "forth", "four", "from", "further", "furthermore", "get", "gets", "getting", "given", "gives", "go", "goes", "going", "gone", "got", "gotten", "greetings", "had", "hadnt", "happens", "hardly", "has", "hasnt", "have", "havent", "having", "he", "hes", "hello", "help", "hence", "her", "here", "heres", "hereafter", "hereby", "herein", "hereupon", "hers", "herself", "hi", "him", "himself", "his", "hither", "hopefully", "how", "howbeit", "however", "http", "https", "i", "id", "ill", "im", "ive", "ie", "if", "ignored", "immediate", "in", "inasmuch", "inc", "indeed", "indicate", "indicated", "indicates", "inner", "insofar", "instead", "into", "inward", "is", "isnt", "it", "itd", "itll", "its", "its", "itself", "just", "keep", "keeps", "kept", "know", "knows", "known", "last", "lately", "later", "latter", "latterly", "least", "less", "lest", "let", "lets", "like", "liked", "likely", "little", "look", "looking", "looks", "ltd", "mainly", "many", "may", "maybe", "me", "mean", "meanwhile", "merely", "might", "more", "moreover", "most", "mostly", "much", "must", "my", "myself", "name", "namely", "nd", "near", "nearly", "necessary", "need", "needs", "neither", "never", "nevertheless", "new", "next", "nine", "no", "nobody", "non", "none", "noone", "nor", "normally", "not", "nothing", "novel", "now", "nowhere", "obviously", "of", "off", "often", "oh", "ok", "okay", "old", "on", "once", "one", "ones", "only", "onto", "or", "other", "others", "otherwise", "ought", "our", "ours", "ourselves", "out", "outside", "over", "overall", "own", "particular", "particularly", "per", "perhaps", "placed", "please", "plus", "possible", "presumably", "probably", "provides", "que", "quite", "qv", "rather", "rd", "re", "really", "reasonably", "regarding", "regardless", "regards", "relatively", "respectively", "right", "said", "same", "saw", "say", "saying", "says", "second", "secondly", "see", "seeing", "seem", "seemed", "seeming", "seems", "seen", "self", "selves", "sensible", "sent", "serious", "seriously", "seven", "several", "shall", "she", "should", "shouldnt", "since", "six", "so", "some", "somebody", "somehow", "someone", "something", "sometime", "sometimes", "somewhat", "somewhere", "soon", "sorry", "specified", "specify", "specifying", "still", "sub", "such", "sup", "sure", "ts", "take", "taken", "tell", "tends", "th", "than", "thank", "thanks", "thanx", "that", "thats", "thats", "the", "their", "theirs", "them", "themselves", "then", "thence", "there", "theres", "thereafter", "thereby", "therefore", "therein", "theres", "thereupon", "these", "they", "theyd", "theyll", "theyre", "theyve", "think", "third", "this", "thorough", "thoroughly", "those", "though", "three", "through", "throughout", "thru", "thus", "to", "together", "too", "took", "toward", "towards", "tried", "tries", "truly", "try", "trying", "twice", "two", "un", "under", "unfortunately", "unless", "unlikely", "until", "unto", "up", "upon", "us", "use", "used", "useful", "uses", "using", "usually", "value", "various", "very", "via", "viz", "vs", "want", "wants", "was", "wasnt", "way", "we", "wed", "well", "were", "weve", "welcome", "well", "went", "were", "werent", "what", "whats", "whatever", "when", "whence", "whenever", "where", "wheres", "whereafter", "whereas", "whereby", "wherein", "whereupon", "wherever", "whether", "which", "while", "whither", "who", "whos", "whoever", "whole", "whom", "whose", "why", "will", "willing", "wish", "with", "within", "without", "wont", "wonder", "would", "would", "wouldnt", "yes", "yet", "you", "youd", "youll", "youre", "youve", "your", "yours", "yourself", "yourselves", "zero", "lol", "hey", "yep", "lmao", "omg", "btw", "idk", "lool", "ahah", "ain", "slp", "xoxo", "don", "bye", "wat", "wow", "pls", "gotta", "omfg", "nah", "isn", "neh", "yeah", "yea", "lot", "lmfao", "tho", "cuz", "yup", "frfr", "sigh", "bout", "asap", "deh", "nuh", "blah", "yay", "damn"};
+	static private String[] stopwords = new StopWordsRemover().getStopWords();
 	static private Set<String> stopWordSet = new HashSet<String>(Arrays.asList(stopwords));
 	static private int profile_length = 10;
 
@@ -33,6 +33,7 @@ public class TwitterAnalysis {
 		String[] words = tweet.replaceAll("@[^\\s]+", " ").replaceAll("((www\\.[^\\s]+)|(https?://[^\\s]+)|(pic\\.twitter\\.com/[^\\s]+))", " ").replaceAll("[^a-zA-Z ]", " ").toLowerCase().split("\\s+");
 		List<String> features = new ArrayList<>();
 		for (String word : words) {
+			word = new PorterStemmer().stem(word);
 			if (word.length() > 2 && word.length() < 16 && !stopWordSet.contains(word) &&
 				!word.matches(".*(a{3,}|b{3,}|c{3,}|d{3,}|e{3,}|f{3,}|g{3,}|h{3,}|i{3,}|j{3,}|k{3,}|l{3,}|m{3,}|n{3,}|o{3,}|p{3,}|q{3,}|r{3,}|s{3,}|t{3,}|u{3,}|v{3,}|w{3,}|x{3,}|y{3,}|z{3,}).*") &&
 				!word.matches("(.*(ahah).*)|(.*(haha).*)") &&
@@ -45,31 +46,34 @@ public class TwitterAnalysis {
 
 	public static void main(String[] args) {
 		Builder builder = new Builder().appName("Twitter analysis");
-		if (new File("/home/").exists()) {
-			builder.master("local");
-		}
-		SparkSession spark = builder.getOrCreate();
 
+		SparkSession spark = builder.getOrCreate();
 		JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
-		
-		JavaRDD<String> rdd = sc.textFile("../data/tweets_20xuser_time_all.txt");
-		
+
+		JavaRDD<String> rdd = sc.textFile(args[0]);
+
 		double n = rdd.map(s -> 1).reduce((a, b) -> a + b);
+
 		JavaPairRDD<String, Integer> wordCount = rdd.flatMap(line -> {
 			String[] parts = line.split("\t\t");
+			if (parts.length < 2) {
+				return new ArrayList<String>().iterator();
+			}
 			List<String> features = featuresFromTweet(parts[1], false);
 			return features.iterator();
 		}).mapToPair(x -> new Tuple2<String, Integer>(x, 1)).reduceByKey((x, y) -> x + y);
 		
 		Map<String, Double> m = new HashMap<String, Double>();
-
 		for (Tuple2<String, Integer> t : wordCount.collect()) {
 			m.put(t._1, (double)t._2/n);
 		}
-		
+
 		JavaPairRDD<String, List<Tuple2<String, Double>>> userProfiling = rdd.mapToPair((PairFunction<String, String, List<String>>) line -> {
 			String[] parts = line.split("\t\t");
 			String user = parts[0];
+			if (parts.length < 2) {
+				return new Tuple2<>(user, new ArrayList<>());
+			}
 			List<String> features = featuresFromTweet(parts[1], true);
 			return new Tuple2<>(user, features);
 		}).reduceByKey((x, y) -> {
@@ -121,7 +125,7 @@ public class TwitterAnalysis {
 			}
 			return new Tuple2<>(p._1, features);			
 		});
-				
+
 		List<UserProfile> userProfiles = new ArrayList<>();
 		for (Tuple2<String, List<Tuple2<String, Double>>> t : userProfiling.collect()) {
 			UserProfile userProfile = new UserProfile();
@@ -129,12 +133,13 @@ public class TwitterAnalysis {
 			userProfile.setFeatures(t._2);
 			userProfiles.add(userProfile);
 		}
-		
+
+		System.out.println("Number of user: " + userProfiling.collect().size());
 		sc.close();
-		
+
 		PrintWriter writer;
 		try {
-			writer = new PrintWriter("users.txt");
+			writer = new PrintWriter("user_profiles.txt");
 			for (UserProfile userProfile : userProfiles) {
 				if (userProfile.getFeatures().size() > 3) {
 					writer.println(userProfile);
@@ -144,7 +149,5 @@ public class TwitterAnalysis {
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		}
-		
-		System.out.println("Number of user: " + userProfiles.size());
 	}
 }
